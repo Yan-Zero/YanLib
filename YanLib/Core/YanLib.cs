@@ -18,18 +18,22 @@ namespace YanLib
     /// <summary>
     /// Mod 入口
     /// </summary>
-    [BepInPlugin(YanLib.GUID, "Yan.Lib", YanLib.version)]
+    [BepInPlugin(GUID, "Yan.Lib", Version)]
     [BepInProcess("The Scroll Of Taiwu Alpha V1.0.exe")]
     public class YanLib : BaseUnityPlugin
     {
         /// <summary>版本</summary>
-        public const string version = "1.2.1.0";
+        public const string Version = "1.4.0.0";
         /// <summary>GUID</summary>
         public const string GUID = "0.0Yan.Lib";
         /// <summary>日志</summary>
         public static new ManualLogSource Logger;
         /// <summary>Yan Lib 的设置</summary>
         internal static Settings settings = new Settings();
+        /// <summary>
+        /// Debug 模式
+        /// </summary>
+        public static bool DebugMode = false;
 
         private void Awake()
         {
@@ -39,6 +43,8 @@ namespace YanLib
             settings.Init(Config);
             RuntimeConfig.Init();
             HarmonyPatches.Init();
+
+            
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TaiwuUIKit.GameObjects;
@@ -13,7 +14,7 @@ using UnityUIKit.GameObjects;
 
 namespace YanLib.Core
 {
-    static class HarmonyPatches
+    static partial class HarmonyPatches
     {
         public static readonly Harmony harmony = new Harmony(YanLib.GUID);
         public static readonly Type PatchesType = typeof(HarmonyPatches);
@@ -61,6 +62,78 @@ namespace YanLib.Core
                 TargetMethonName = "Awake",
                 Postfix = AccessTools.Method(PatchesType,"DateFile_Awake_Postfix")
             }},
+            { "EventUIShow", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "SetMassageWindow",
+                Prefix = AccessTools.Method(PatchesType,"EventUIShow")
+            }},
+            { "AdditionalChoiceDraw", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "SetMassageWindow",
+                Postfix = AccessTools.Method(PatchesType,"AdditionalChoiceDraw")
+            }},
+            { "GetItem", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "GetItem",
+                Prefix = AccessTools.Method(PatchesType,"GetItem_Prefix")
+            }},
+            { "InitEvent_Postfix", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "InitEvent",
+                Postfix = AccessTools.Method(PatchesType,"InitEvent_Postfix")
+            }},
+            { "SetItem", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "SetItem",
+                Prefix = AccessTools.Method(PatchesType,"SetItem_Prefix")
+            }},
+            { "GetActor", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "GetActor",
+                Prefix = AccessTools.Method(PatchesType,"GetActor_Prefix")
+            }},
+            { "SetActor", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "SetActor",
+                Prefix = AccessTools.Method(PatchesType,"SetActor_Prefix")
+            }},
+            { "UpdateInputText", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "UpdateInputText",
+                Prefix = AccessTools.Method(PatchesType,"UpdateInputText_Prefix")
+            }},
+            { "ShowTip", new PatchHandler
+            {
+                TargetType = typeof(WindowManage),
+                TargetMethonName = "WindowSwitch",
+                Postfix = AccessTools.Method(PatchesType,"ShowTip")
+            }},
+            { "ChangeTrun", new PatchHandler
+            {
+                TargetType = typeof(UIDate),
+                TargetMethonName = "ChangeTrun",
+                Postfix = AccessTools.Method(PatchesType,"UIData_ChangeTrun_Postfix")
+            }},
+            { "OnChoose_Update", new PatchHandler
+            {
+                TargetType = typeof(OnChoose),
+                TargetMethonName = "Update",
+                Prefix = AccessTools.Method(PatchesType,"OnChoose_Update")
+            }},
+            //{ "SetActorMassage", new PatchHandler
+            //{
+            //    TargetType = typeof(MessageEventManager),
+            //    TargetMethonName = "SetActorMassage",
+            //    Transpiler = AccessTools.Method(PatchesType,"SetActorMassage")
+            //}},
         };
 
         public static void Init()
@@ -161,6 +234,13 @@ namespace YanLib.Core
                     mod.SettingUI = ui;
                 }
 
+        }
+
+        private static void UIData_ChangeTrun_Postfix()
+        {
+            RuntimeConfig.ChangeTrun();
+            foreach (var mod in RuntimeConfig.Mods)
+                mod.ChangeTrun?.Invoke();
         }
     }
 }

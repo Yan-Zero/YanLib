@@ -363,7 +363,7 @@ namespace YanLib.DataManipulator
             AllData.GongFas = DateFile.instance.actorGongFas[ActorID];
             AllData.ActorData = new Dictionary<int, string>();
 
-            foreach (var key in RuntimeConfig.KeyUsed)
+            foreach (var key in RuntimeConfig.ActorDataKeyUsed)
                 if (Characters.HasCharProperty(ActorID, key))
                     AllData.ActorData[key] = Characters.GetCharProperty(ActorID, key);
 

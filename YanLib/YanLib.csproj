@@ -46,6 +46,14 @@
       <HintPath>..\lib\BepInEx.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="DOTween">
+      <HintPath>..\lib\Unity\DOTween.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DOTweenPro">
+      <HintPath>..\lib\Unity\DOTweenPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
@@ -105,11 +113,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Debug.cs" />
     <Compile Include="Core\HarmonyPatches.cs" />
     <Compile Include="Core\RuntimeConfig.cs" />
     <Compile Include="Core\Setting.cs" />
     <Compile Include="DataManipulator\Actor.cs" />
     <Compile Include="Core\YanLib.cs" />
+    <Compile Include="EventSystem\AdditonalChoice.cs" />
+    <Compile Include="EventSystem\CallInfo.cs" />
+    <Compile Include="EventSystem\ChoiceEnd.cs" />
+    <Compile Include="EventSystem\ChoiceRequirement.cs" />
+    <Compile Include="EventSystem\Discussion\ClothesChoices.cs" />
+    <Compile Include="EventSystem\Discussion\Part_1.cs" />
+    <Compile Include="EventSystem\Discussion\Part_2.cs" />
+    <Compile Include="EventSystem\Event.cs" />
+    <Compile Include="EventSystem\EventChoice.cs" />
+    <Compile Include="DataManipulator\EventHelper.cs" />
+    <Compile Include="EventSystem\InputFieldInfo.cs" />
+    <Compile Include="EventSystem\PointerEnter.cs" />
+    <Compile Include="EventSystem\WulinGeneral\Part_1.cs" />
+    <Compile Include="YanException\InvalidEventID.cs" />
+    <Compile Include="UI\EventUI\HarmonyPatches.cs" />
     <Compile Include="ModHelper\ModHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\SettingUI.cs" />

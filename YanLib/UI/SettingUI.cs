@@ -33,7 +33,7 @@ namespace YanLib.UI
                     (RuntimeConfig.UI_Config.windows = new TaiwuWindows()
                     {
                         Name = "YanLib.Windows",
-                        Title = $"YanLib {YanLib.version}",
+                        Title = $"YanLib {YanLib.Version}",
                         Direction = Direction.Vertical,
                         Spacing = 10,
                         Group =

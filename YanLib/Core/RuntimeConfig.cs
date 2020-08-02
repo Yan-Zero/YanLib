@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,11 +10,48 @@ using UnityUIKit.Core;
 using UnityUIKit.GameObjects;
 using YamlDotNet.Core.Tokens;
 using YanLib.DataManipulator;
+using YanLib.EventSystem;
 
 namespace YanLib.Core
 {
     internal static class RuntimeConfig
     {
+        internal static Dictionary<int, string> ResourceName = new Dictionary<int, string>()
+        {
+            {
+                401,
+                "食材"
+            },
+            {
+                402,
+                "木材"
+            },
+            {
+                403,
+                "金石"
+            },
+            {
+                404,
+                "织物"
+            },
+            {
+                405,
+                "药材"
+            },
+            {
+                406,
+                "银钱"
+            },
+            {
+                407,
+                "威望"
+            },
+            {
+                408,
+                "人力"
+            }
+        };
+
         private static List<int> GameUsedDataKey = new List<int>();
         static RuntimeConfig()
         {
@@ -50,12 +88,38 @@ namespace YanLib.Core
             { 2001, 2007 },
         };
 
+        //Fix
         public static Stack<int> EmptySocialId = new Stack<int>();
         public static Stack<int> EmptyActorId = new Stack<int>();
-
-        public static Dictionary<string, Dictionary<int, int>> ModKeys = new Dictionary<string, Dictionary<int, int>>();
-        public static List<int> KeyUsed = new List<int>();
         public static Dictionary<int, Dictionary<int, string>> TraverserLifeRecordFix = new Dictionary<int, Dictionary<int, string>>();
+
+        //ActorData
+        public static Dictionary<string, Dictionary<int, int>> ActorDataModKeys = new Dictionary<string, Dictionary<int, int>>();
+        public static List<int> ActorDataKeyUsed = new List<int>();
+
+        //EventData
+        public static Dictionary<string, Dictionary<int, Event>> EventData = new Dictionary<string, Dictionary<int, Event>>();
+        public static Event CurEvent = null;
+        /// <summary>
+        /// 选择次数，用来限制每个时节的次数的
+        /// </summary>
+        public static Dictionary<string, Dictionary<int, int>> ChoiceCount = new Dictionary<string, Dictionary<int, int>>();
+        internal static class ChoiceEnvironment
+        {
+            public static int GetWhoItem = 0;
+            public static bool HasChoose = false;
+            public static InputFieldInfo InputFieldInfo;
+            public static Action<string, int> ChoiceChoose;
+            public static string ID;
+            public static IEnumerable<int> Filter;
+
+            public static void Choose()
+            {
+                ChoiceChoose?.Invoke(ID, MessageEventManager.Instance.MainEventData[1]);
+            }
+        }
+        public static Dictionary<int, List<AdditionalChoices>> AdditionalChoices = new Dictionary<int, List<AdditionalChoices>>();
+
 
         public static List<ModHelper.ModHelper> Mods = new List<ModHelper.ModHelper>();
         public static bool GameLoaded = false;
@@ -66,18 +130,18 @@ namespace YanLib.Core
         /// <param name="GUID">GUID</param>
         /// <param name="Key">Mod 内部的 Key</param>
         /// <returns></returns>
-        public static int AllocateKey(string GUID, int Key)
+        public static int AllocateActorDataKey(string GUID, int Key)
         {
             do
             {
-                if (KeyUsed.Contains(MaxKeyIndex))
+                if (ActorDataKeyUsed.Contains(MaxKeyIndex))
                 {
                     MaxKeyIndex++;
                     continue;
                 }
-                ModKeys[GUID].Add(Key, MaxKeyIndex);
-                KeyUsed.Add(MaxKeyIndex);
-                return ModKeys[GUID][Key];
+                ActorDataModKeys[GUID].Add(Key, MaxKeyIndex);
+                ActorDataKeyUsed.Add(MaxKeyIndex);
+                return ActorDataModKeys[GUID][Key];
             }
             while (true);
         }
@@ -96,7 +160,9 @@ namespace YanLib.Core
             TraverserLifeRecordFix = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, string>>>(DateFile.instance.modDate[YanLib.GUID]["TraverserLifeRecordFix"]);
             EmptyActorId = JsonConvert.DeserializeObject<Stack<int>>(DateFile.instance.modDate[YanLib.GUID]["EmptyActorId"]);
             EmptySocialId = JsonConvert.DeserializeObject<Stack<int>>(DateFile.instance.modDate[YanLib.GUID]["EmptySocialId"]);
-            MaxKeyIndex = JsonConvert.DeserializeObject<int>(DateFile.instance.modDate[YanLib.GUID]["MaxKeyIndex"]);
+            if(DateFile.instance.modDate[YanLib.GUID].ContainsKey("ChoiceCount"))
+                ChoiceCount = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, int>>>(DateFile.instance.modDate[YanLib.GUID]["ChoiceCount"]);
+            
         }
 
         /// <summary>
@@ -108,6 +174,7 @@ namespace YanLib.Core
             EmptyActorId = new Stack<int>();
             TraverserLifeRecordFix = new Dictionary<int, Dictionary<int, string>>();
             DateFile.instance.modDate.Add(YanLib.GUID, new Dictionary<string, string>());
+            ChoiceCount = new Dictionary<string, Dictionary<int, int>>();
         }
 
         /// <summary>
@@ -118,6 +185,12 @@ namespace YanLib.Core
             DateFile.instance.modDate[YanLib.GUID]["TraverserLifeRecordFix"] = JsonConvert.SerializeObject(TraverserLifeRecordFix);
             DateFile.instance.modDate[YanLib.GUID]["EmptySocialId"] = JsonConvert.SerializeObject(EmptySocialId);
             DateFile.instance.modDate[YanLib.GUID]["EmptyActorId"] = JsonConvert.SerializeObject(EmptyActorId);
+            DateFile.instance.modDate[YanLib.GUID]["ChoiceCount"] = JsonConvert.SerializeObject(ChoiceCount);
+        }
+
+        public static void ChangeTrun()
+        {
+            ChoiceCount.Clear();
         }
 
         public static class UI_Config
@@ -144,15 +217,62 @@ namespace YanLib.Core
 
         public static void Init()
         {
-            ModKeys = YanLib.settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value;
-            KeyUsed = YanLib.settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value;
+            ActorDataModKeys = YanLib.settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value;
+            ActorDataKeyUsed = YanLib.settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value;
             MaxKeyIndex = YanLib.settings.Config.Bind("Key", "DataKey-Max", 3001, "被使用的 Key").Value;
+
+            List<string> NeedToLoadFile = new List<string>();
+            Stack<string> Dir = new Stack<string>();
+            Dir.Push(BepInEx.Paths.PluginPath);
+            Dir.Push(Path.Combine(BepInEx.Paths.GameRootPath, "Mods"));
+            do
+            {
+                var directory = Dir.Pop();
+                foreach (var i in Directory.GetFiles(directory))
+                    if(Path.GetExtension(i).ToLower() == ".yaml")
+                        NeedToLoadFile.Add(i);
+                foreach (var i in Directory.GetDirectories(directory))
+                    Dir.Push(i);
+            } while (Dir.Count > 0);
+            foreach (var i in NeedToLoadFile)
+            {
+                var folderName = Path.GetFileName(Path.GetDirectoryName(i)).ToLower();
+                if (folderName == "eventdata" || folderName == "events")
+                {
+                    try
+                    {
+                        EventHelper.LoadEventDataFromFile(i);
+                    }
+                    catch (Exception ex)
+                    {
+                        YanLib.Logger.LogError("错误文件：" + i);
+                        YanLib.Logger.LogError(ex);
+                    }
+                }
+                else if(folderName == "additionalchoices")
+                {
+                    Dir.Push(i);
+                }
+            }
+            while (Dir.Count > 0)
+            {
+                var File = Dir.Pop();
+                try
+                {
+                    EventHelper.LoadAdditionalChoicesDataFromFile(File);
+                }
+                catch (Exception ex)
+                {
+                    YanLib.Logger.LogError("错误文件：" + File);
+                    YanLib.Logger.LogError(ex);
+                }
+            };
         }
 
         public static void SaveConfig()
         {
-            YanLib.settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value = ModKeys;
-            YanLib.settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value = KeyUsed;
+            YanLib.settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value = ActorDataModKeys;
+            YanLib.settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value = ActorDataKeyUsed;
             YanLib.settings.Config.Bind("Key", "DataKey-Max", 3001, "Key 最大值").Value = MaxKeyIndex;
         }
     }

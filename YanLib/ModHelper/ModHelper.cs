@@ -41,6 +41,12 @@ namespace YanLib.ModHelper
         /// 加载存档时调用
         /// </summary>
         public Action LoadData;
+        /// <summary>
+        /// 过月时候调用，不建议用这个（
+        /// 否则过月速度会被拖慢（
+        /// </summary>
+        public Action ChangeTrun;
+
 
         /// <summary>
         /// Mod 的设置
@@ -104,7 +110,8 @@ namespace YanLib.ModHelper
                             Children =
                             {
                                 ui
-                            }
+                            },
+                            DefaultActive = false
                         }
                     }
                 });
@@ -120,23 +127,24 @@ namespace YanLib.ModHelper
         {
             GUID = _GUID;
             Name = ModName;
-            if (!RuntimeConfig.ModKeys.ContainsKey(GUID))
-                RuntimeConfig.ModKeys.Add(GUID, new Dictionary<int, int>() { });
+            if (!RuntimeConfig.ActorDataModKeys.ContainsKey(GUID))
+                RuntimeConfig.ActorDataModKeys.Add(GUID, new Dictionary<int, int>() { });
             RuntimeConfig.Mods.Add(this);
         }
 
         /// <summary>
-        /// 返回一个专属的 Key 用以储存信息
+        /// 返回一个专属 ActorData 的 Key 用以储存信息
         /// </summary>
         /// <param name="Key">Mod 内部使用的 Key 值，例如 1 2 3</param>
         /// <returns></returns>
         public int GetActorDataKey(int Key)
         {
-            if (RuntimeConfig.ModKeys[GUID].TryGetValue(Key, out int key))
+            if (RuntimeConfig.ActorDataModKeys[GUID].TryGetValue(Key, out int key))
                 return key;
             else
-                return RuntimeConfig.AllocateKey(GUID, Key);
+                return RuntimeConfig.AllocateActorDataKey(GUID, Key);
         }
 
+        
     }
 }
