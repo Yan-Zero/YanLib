@@ -177,13 +177,20 @@ namespace YanLib.DataManipulator
         }
 
         /// <summary>
-        /// 原版事件
+        /// 原版事件，原版事件转原版事件并不会改动 MainEventData，请自己手动修改
         /// </summary>
         /// <param name="ID"></param>
         /// <param name="TargetActorID"></param>
-        public static void CallEvent(int ID, int TargetActorID)
+        /// <param name="chooseId">只有转场的时候才用得到</param>
+        public static void CallEvent(int ID, int TargetActorID,int chooseId = 0)
         {
-            UIManager.Instance.AddUI("ui_MessageWindow", new int[] { 0, TargetActorID, ID });
+            if (ui_MessageWindow.Exists && RuntimeConfig.CurEvent == null)
+            {
+                EventMisc.SetMassageWindow(MessageEventManager.Instance.MainEventData, chooseId);
+                EventMisc.SetSizeDelta(2);
+            }
+            else
+                UIManager.Instance.AddUI("ui_MessageWindow", new int[] { 0, TargetActorID, ID, TargetActorID });
         }
 
         /// <summary>

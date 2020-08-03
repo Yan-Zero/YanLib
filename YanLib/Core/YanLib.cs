@@ -23,7 +23,7 @@ namespace YanLib
     public class YanLib : BaseUnityPlugin
     {
         /// <summary>版本</summary>
-        public const string Version = "1.4.0.0";
+        public const string Version = "1.4.1.0";
         /// <summary>GUID</summary>
         public const string GUID = "0.0Yan.Lib";
         /// <summary>日志</summary>

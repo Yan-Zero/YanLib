@@ -114,6 +114,11 @@ namespace YanLib.Core
             }
         }
 
+        private static void Hide_Postfix()
+        {
+            RuntimeConfig.CurEvent = null;
+        }
+
         private static void ShowTip(GameObject tips, ref Text ___informationMassage, ref Text ___informationName, ref bool ___anTips, ref int ___tipsH)
         {
             if(tips != null)

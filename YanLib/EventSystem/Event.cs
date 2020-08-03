@@ -238,6 +238,9 @@ namespace YanLib.EventSystem
         private static FieldInfo _battleQuquCall = AccessTools.Field(typeof(ui_MessageWindow), "battleQuquCall");
         private static FieldInfo _inputMax = AccessTools.Field(typeof(ui_MessageWindow), "inputMax");
         private static FieldInfo _inputMin = AccessTools.Field(typeof(ui_MessageWindow), "inputMin");
+        private static FieldInfo _sizeDeltaChange = AccessTools.Field(typeof(ui_MessageWindow), "sizeDeltaChange");
+
+        private static MethodInfo _SetMassageWindow = AccessTools.Method(typeof(ui_MessageWindow), "SetMassageWindow");
 
         public static bool QuQuCall
         {
@@ -258,6 +261,15 @@ namespace YanLib.EventSystem
         {
             get => (int)_inputMin.GetValue(ui_MessageWindow.Instance);
             set => _inputMin.SetValue(ui_MessageWindow.Instance, value);
+        }
+
+        public static void SetMassageWindow(int[] baseEventDate, int chooseId)
+        {
+            _SetMassageWindow.Invoke(ui_MessageWindow.Instance, new object[] { baseEventDate , chooseId });
+        }
+        public static void SetSizeDelta(int delta)
+        {
+            _sizeDeltaChange.SetValue(ui_MessageWindow.Instance, delta);
         }
     }
 }

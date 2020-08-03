@@ -116,6 +116,12 @@ namespace YanLib.Core
                 TargetMethonName = "WindowSwitch",
                 Postfix = AccessTools.Method(PatchesType,"ShowTip")
             }},
+            { "Hide", new PatchHandler
+            {
+                TargetType = typeof(WindowManage),
+                TargetMethonName = "Hide",
+                Postfix = AccessTools.Method(PatchesType,"Hide_Postfix")
+            }},
             { "ChangeTrun", new PatchHandler
             {
                 TargetType = typeof(UIDate),
