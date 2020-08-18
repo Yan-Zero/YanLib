@@ -32,7 +32,8 @@ namespace YanLib.DataManipulator
                 return;
 
             DateFile.instance.MoveOutPlace(ActorID);
-            List<int> TempIDList;
+
+            HashSet<int> TempIDList = new HashSet<int>();
             foreach (var socialType in DateFile.instance.socialOnly)
                 switch (socialType.Key)
                 {
@@ -46,10 +47,14 @@ namespace YanLib.DataManipulator
                         break;
 
                     case 310:
-                        TempIDList = new List<int>();
+                        TempIDList.Clear();
                         foreach (var i in GetSpecifiedLifeData(ActorID, 310))
+                        {
                             foreach (var ii in i.Value)
                                 TempIDList.Add(ii);
+                            DelSocial(i.Key, ActorID, socialType.Key);
+                        }
+
                         //孩子的父母
                         foreach (var ChildID in TempIDList)
                         {
@@ -64,7 +69,7 @@ namespace YanLib.DataManipulator
 
                     case 303:
                     case 304:
-                        TempIDList = new List<int>();
+                        TempIDList.Clear();
                         foreach (var i in GetSpecifiedLifeData(ActorID, socialType.Key))
                         {
                             foreach (var ii in i.Value)
@@ -95,7 +100,7 @@ namespace YanLib.DataManipulator
                 if (DateFile.instance.actorLife[actorId].TryGetValue(801, out var value))
                     value.Remove(ActorID);
 
-            TempIDList = new List<int>();
+            TempIDList.Clear();
             foreach (var i in GetLifeRecords(ActorID, ParamTypes: new List<int>() { 0 }))
             {
                 string text = DateFile.instance.actorMassageDate[i.messageId][2];
@@ -146,9 +151,9 @@ namespace YanLib.DataManipulator
                 foreach (int item in lifeDateList)
                 {
                     if (!DateFile.instance.actorSocialDate.ContainsKey(item))
-                        dictionary.Add(item, new List<int>());
+                        dictionary[item] = new List<int>();
                     else
-                        dictionary.Add(item, DateFile.instance.actorSocialDate[item]);
+                        dictionary[item] = DateFile.instance.actorSocialDate[item];
                 }
             }
             return dictionary;
@@ -160,7 +165,7 @@ namespace YanLib.DataManipulator
         /// <param name="SocialId">关系 ID</param>
         /// <param name="ActorAId">发起者（即储存在谁那）</param>
         /// <param name="SocialTyp">关系类型（饼：后期可能会去改成枚举）</param>
-        /// <param name="ActorBId">被移除掉的对像（默认为 ActorA ）</param>
+        /// <param name="ActorBId">被移除掉的对象（默认为 ActorA ）</param>
         public static void DelSocial(int SocialId, int ActorAId, int SocialTyp, int ActorBId = -1)
         {
             if (!DateFile.instance.HaveLifeDate(ActorAId, SocialTyp)
@@ -168,40 +173,47 @@ namespace YanLib.DataManipulator
                 || SocialTyp == 601
                 || SocialTyp == 602)
                 return;
+
             if (ActorBId < 0)
                 ActorBId = ActorAId;
+
+            if (!DateFile.instance.actorSocialDate.ContainsKey(SocialId))
+            {
+                if (DateFile.instance.HaveLifeDate(ActorBId, SocialTyp))
+                    DateFile.instance.actorLife[ActorBId][SocialTyp].Remove(SocialId);
+
+                if (DateFile.instance.HaveLifeDate(ActorAId, SocialTyp))
+                    DateFile.instance.actorLife[ActorAId][SocialTyp].Remove(SocialId);
+
+                return;
+            }
 
             if (DateFile.instance.socialOnly[SocialTyp][0] == false && DateFile.instance.socialOnly[SocialTyp][1])
             {
                 foreach (var ID in DateFile.instance.actorSocialDate[SocialId])
                     if (DateFile.instance.HaveLifeDate(ID, SocialTyp))
-                    {
                         DateFile.instance.actorLife[ID][SocialTyp].Remove(SocialId);
-                        if (DateFile.instance.GetLifeDateList(ID, SocialTyp, true).Count <= 0)
-                            DateFile.instance.actorLife[ID].Remove(SocialTyp);
-                    }
-                DateFile.instance.actorSocialDate.Remove(SocialId);
+
+                DateFile.instance.actorSocialDate[SocialId].Clear();
                 RuntimeConfig.EmptySocialId.Push(SocialId);
             }
             else
             {
                 DateFile.instance.actorSocialDate[SocialId].Remove(ActorBId);
+
                 if (DateFile.instance.socialOnly[SocialTyp][1] && ActorAId != ActorBId)
-                {
-                    DateFile.instance.actorLife[ActorBId][SocialTyp].Remove(SocialId);
-                    if (DateFile.instance.GetLifeDateList(ActorBId, SocialTyp, true).Count <= 0)
-                        DateFile.instance.actorLife[ActorBId].Remove(SocialTyp);
-                }
+                    if (DateFile.instance.actorLife[ActorBId].TryGetValue(SocialTyp,out var value))
+                        value.Remove(SocialId);
 
                 if (DateFile.instance.actorSocialDate[SocialId].Count <= 0
                     || (DateFile.instance.socialOnly[SocialTyp][1] && ActorAId == ActorBId))
                 {
-                    DateFile.instance.actorLife[ActorAId][SocialTyp].Remove(SocialId);
-                    DateFile.instance.actorSocialDate.Remove(SocialId);
+                    if (DateFile.instance.actorLife[ActorAId].TryGetValue(SocialTyp, out var value))
+                        value.Remove(SocialId);
+
+                    DateFile.instance.actorSocialDate[SocialId].Clear();
                     RuntimeConfig.EmptySocialId.Push(SocialId);
                 }
-                if (DateFile.instance.GetLifeDateList(ActorAId, SocialTyp, true).Count <= 0)
-                    DateFile.instance.actorLife[ActorAId].Remove(SocialTyp);
             }
         }
 
@@ -305,9 +317,9 @@ namespace YanLib.DataManipulator
             if ((ParamValues?.Count ?? 0) == 0)
                 ParamValues = null;
             if (ParamValues == null && ParamTypes == null && RecordTypes == null)
-                return LifeRecords.GetAllRecords(ActorID).ToList();
-
-            foreach (var i in LifeRecords.GetAllRecords(ActorID))
+                return LifeRecords.GetAllRecords(ActorID)?.ToList() ?? result;
+            var temp = LifeRecords.GetAllRecords(ActorID)?.ToList() ?? result;
+            foreach (var i in temp)
             {
                 if (RecordTypes != null && !RecordTypes.Contains(i.messageId))
                     continue;
@@ -473,6 +485,16 @@ namespace YanLib.DataManipulator
 
             var place = DateFile.instance.GetActorAtPlace(DateFile.instance.mianActorId);
             DateFile.instance.MoveToPlace(place[0], place[1], ActorID, true);
+        }
+
+        /// <summary>
+        /// 删除经历适配用的
+        /// </summary>
+        /// <param name="ActorID"></param>
+        public static void DelTraverserLifeRecordFix(int ActorID)
+        {
+            if (RuntimeConfig.TraverserLifeRecordFix.ContainsKey(ActorID))
+                RuntimeConfig.TraverserLifeRecordFix.Remove(ActorID);
         }
     }
 }

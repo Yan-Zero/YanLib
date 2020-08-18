@@ -14,7 +14,10 @@ using YanLib.EventSystem;
 
 namespace YanLib.Core
 {
-    internal static class RuntimeConfig
+    /// <summary>
+    /// 运行时候的配置
+    /// </summary>
+    public static class RuntimeConfig
     {
         internal static Dictionary<int, string> ResourceName = new Dictionary<int, string>()
         {
@@ -89,21 +92,27 @@ namespace YanLib.Core
         };
 
         //Fix
+        /// <summary>
+        /// 没有占用的社交 ID
+        /// </summary>
         public static Stack<int> EmptySocialId = new Stack<int>();
+        /// <summary>
+        /// 没有占用的人物 ID
+        /// </summary>
         public static Stack<int> EmptyActorId = new Stack<int>();
-        public static Dictionary<int, Dictionary<int, string>> TraverserLifeRecordFix = new Dictionary<int, Dictionary<int, string>>();
+        internal static Dictionary<int, Dictionary<int, string>> TraverserLifeRecordFix = new Dictionary<int, Dictionary<int, string>>();
 
         //ActorData
-        public static Dictionary<string, Dictionary<int, int>> ActorDataModKeys = new Dictionary<string, Dictionary<int, int>>();
-        public static List<int> ActorDataKeyUsed = new List<int>();
+        internal static Dictionary<string, Dictionary<int, int>> ActorDataModKeys = new Dictionary<string, Dictionary<int, int>>();
+        internal static List<int> ActorDataKeyUsed = new List<int>();
 
         //EventData
-        public static Dictionary<string, Dictionary<int, Event>> EventData = new Dictionary<string, Dictionary<int, Event>>();
-        public static Event CurEvent = null;
+        internal static Dictionary<string, Dictionary<int, Event>> EventData = new Dictionary<string, Dictionary<int, Event>>();
+        internal static Event CurEvent = null;
         /// <summary>
         /// 选择次数，用来限制每个时节的次数的
         /// </summary>
-        public static Dictionary<string, Dictionary<int, int>> ChoiceCount = new Dictionary<string, Dictionary<int, int>>();
+        internal static Dictionary<string, Dictionary<int, int>> ChoiceCount = new Dictionary<string, Dictionary<int, int>>();
         internal static class ChoiceEnvironment
         {
             public static int GetWhoItem = 0;
@@ -118,11 +127,11 @@ namespace YanLib.Core
                 ChoiceChoose?.Invoke(ID, MessageEventManager.Instance.MainEventData[1]);
             }
         }
-        public static Dictionary<int, List<AdditionalChoices>> AdditionalChoices = new Dictionary<int, List<AdditionalChoices>>();
+        internal static Dictionary<int, List<AdditionalChoices>> AdditionalChoices = new Dictionary<int, List<AdditionalChoices>>();
 
 
-        public static List<ModHelper.ModHelper> Mods = new List<ModHelper.ModHelper>();
-        public static bool GameLoaded = false;
+        internal static List<ModHelper.ModHelper> Mods = new List<ModHelper.ModHelper>();
+        internal static bool GameLoaded = false;
 
         /// <summary>
         /// 分配 Key 返回分配到的 Key。
@@ -130,7 +139,7 @@ namespace YanLib.Core
         /// <param name="GUID">GUID</param>
         /// <param name="Key">Mod 内部的 Key</param>
         /// <returns></returns>
-        public static int AllocateActorDataKey(string GUID, int Key)
+        internal static int AllocateActorDataKey(string GUID, int Key)
         {
             do
             {
@@ -149,7 +158,7 @@ namespace YanLib.Core
         /// <summary>
         /// 加载当前存档中的配置
         /// </summary>
-        public static void LoadData()
+        internal static void LoadData()
         {
             if (!DateFile.instance.modDate.ContainsKey(YanLib.GUID))
             {
@@ -168,7 +177,7 @@ namespace YanLib.Core
         /// <summary>
         /// 新建存档时创建基础配置
         /// </summary>
-        public static void NewData()
+        internal static void NewData()
         {
             EmptySocialId = new Stack<int>();
             EmptyActorId = new Stack<int>();
@@ -180,7 +189,7 @@ namespace YanLib.Core
         /// <summary>
         /// 存档保存时的行为
         /// </summary>
-        public static void SaveData()
+        internal static void SaveData()
         {
             DateFile.instance.modDate[YanLib.GUID]["TraverserLifeRecordFix"] = JsonConvert.SerializeObject(TraverserLifeRecordFix);
             DateFile.instance.modDate[YanLib.GUID]["EmptySocialId"] = JsonConvert.SerializeObject(EmptySocialId);
@@ -188,12 +197,12 @@ namespace YanLib.Core
             DateFile.instance.modDate[YanLib.GUID]["ChoiceCount"] = JsonConvert.SerializeObject(ChoiceCount);
         }
 
-        public static void ChangeTrun()
+        internal static void ChangeTrun()
         {
             ChoiceCount.Clear();
         }
 
-        public static class UI_Config
+        internal static class UI_Config
         {
             public static Container.CanvasContainer overlay = null;
             public static TaiwuWindows windows = null;
@@ -215,16 +224,17 @@ namespace YanLib.Core
             }
         }
 
-        public static void Init()
+        internal static void Init()
         {
-            ActorDataModKeys = YanLib.settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value;
-            ActorDataKeyUsed = YanLib.settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value;
-            MaxKeyIndex = YanLib.settings.Config.Bind("Key", "DataKey-Max", 3001, "被使用的 Key").Value;
+            ActorDataModKeys = YanLib.Settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value;
+            ActorDataKeyUsed = YanLib.Settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value;
+            MaxKeyIndex = YanLib.Settings.Config.Bind("Key", "DataKey-Max", 3001, "被使用的 Key").Value;
 
             List<string> NeedToLoadFile = new List<string>();
             Stack<string> Dir = new Stack<string>();
             Dir.Push(BepInEx.Paths.PluginPath);
-            Dir.Push(Path.Combine(BepInEx.Paths.GameRootPath, "Mods"));
+            if (Directory.Exists(Path.Combine(BepInEx.Paths.GameRootPath, "Mods")))
+                Dir.Push(Path.Combine(BepInEx.Paths.GameRootPath, "Mods"));
             do
             {
                 var directory = Dir.Pop();
@@ -269,11 +279,21 @@ namespace YanLib.Core
             };
         }
 
-        public static void SaveConfig()
+        internal static void SaveConfig()
         {
-            YanLib.settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value = ActorDataModKeys;
-            YanLib.settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value = ActorDataKeyUsed;
-            YanLib.settings.Config.Bind("Key", "DataKey-Max", 3001, "Key 最大值").Value = MaxKeyIndex;
+            YanLib.Settings.Config.Bind("Key", "DataKey-Set", new Dictionary<string, Dictionary<int, int>>(), "已设置的 Key").Value = ActorDataModKeys;
+            YanLib.Settings.Config.Bind("Key", "DataKey-Used", GameUsedDataKey, "被使用的 Key").Value = ActorDataKeyUsed;
+            YanLib.Settings.Config.Bind("Key", "DataKey-Max", 3001, "Key 最大值").Value = MaxKeyIndex;
+        }
+
+        /// <summary>
+        /// 这个是清除掉 RuntimeConfig 中有设定的数据，并且将 ID Push 进空人物 ID 列表
+        /// </summary>
+        public static void DelActorData(int ActorID)
+        {
+            EmptyActorId.Push(ActorID);
+            if (TraverserLifeRecordFix.ContainsKey(ActorID))
+                TraverserLifeRecordFix.Remove(ActorID);
         }
     }
 }

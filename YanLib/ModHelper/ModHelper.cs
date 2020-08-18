@@ -46,7 +46,10 @@ namespace YanLib.ModHelper
         /// 否则过月速度会被拖慢（
         /// </summary>
         public Action ChangeTrun;
-
+        /// <summary>
+        /// DataFile Awake 运行的时候调用，对于 UI 添加 MonoBehaviour 的要放在这
+        /// </summary>
+        public Action DataFile_Awake;
 
         /// <summary>
         /// Mod 的设置

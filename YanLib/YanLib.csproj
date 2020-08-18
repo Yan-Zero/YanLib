@@ -132,6 +132,7 @@
     <Compile Include="EventSystem\InputFieldInfo.cs" />
     <Compile Include="EventSystem\PointerEnter.cs" />
     <Compile Include="EventSystem\WulinGeneral\Part_1.cs" />
+    <Compile Include="UI\EventUI\HotkeyMonitor.cs" />
     <Compile Include="YanException\InvalidEventID.cs" />
     <Compile Include="UI\EventUI\HarmonyPatches.cs" />
     <Compile Include="ModHelper\ModHelper.cs" />

@@ -9,7 +9,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TaiwuUIKit.GameObjects;
 using UnityEngine;
+using UnityUIKit.Core;
+using UnityUIKit.GameObjects;
 using YanLib.Core;
 using YanLib.UI;
 
@@ -23,13 +26,13 @@ namespace YanLib
     public class YanLib : BaseUnityPlugin
     {
         /// <summary>版本</summary>
-        public const string Version = "1.4.1.0";
+        public const string Version = "1.5.1.1";
         /// <summary>GUID</summary>
         public const string GUID = "0.0Yan.Lib";
         /// <summary>日志</summary>
         public static new ManualLogSource Logger;
         /// <summary>Yan Lib 的设置</summary>
-        internal static Settings settings = new Settings();
+        internal static Settings Settings = new Settings();
         /// <summary>
         /// Debug 模式
         /// </summary>
@@ -40,11 +43,40 @@ namespace YanLib
             TypeConverterSupporter.Init();
             DontDestroyOnLoad(this);
             Logger = base.Logger;
-            settings.Init(Config);
+            Settings.Init(Config);
             RuntimeConfig.Init();
             HarmonyPatches.Init();
 
-            
+            var Lib = new ModHelper.ModHelper(GUID, "YanLib");
+            Lib.SettingUI = new Container()
+            {
+                Group =
+                {
+                    Direction = Direction.Horizontal,
+                    Spacing = 3
+                },
+                Element = { PreferredSize = { 0, 50 } },
+                Children =
+                {
+                    new TaiwuLabel()
+                    {
+                        Text = "事件的选项快捷键"
+                    },
+                    new TaiwuToggle()
+                    {
+                        Text = Settings.ChoiceHotkey.Value ? "开" : "关",
+                        isOn = Settings.ChoiceHotkey.Value,
+                        onValueChanged = (bool value,Toggle tg) =>
+                        {
+                            tg.Text = value ? "开" : "关";
+                            Settings.ChoiceHotkey.Value = value;
+                        },
+                        Element = { PreferredSize = {50}},
+                        TipTitle = "事件的选项快捷键",
+                        TipContant = "开启后，选项前九个将会允许用快捷键选择",
+                    }
+                }
+            };
         }
 
         /// <summary>
@@ -62,7 +94,7 @@ namespace YanLib
             }
 
             // UI Hotkey
-            if (settings.Hotkey.OpenUI.Value.IsDown() || ToggleUI)
+            if (Settings.Hotkey.OpenUI.Value.IsDown() || ToggleUI)
             {
                 ToggleUI = false;
 
@@ -72,7 +104,7 @@ namespace YanLib
                     if (RuntimeConfig.UI_Config.overlay.IsActive)
                     {
                         RuntimeConfig.UI_Config.overlay.SetActive(false);
-                        settings.Save();
+                        Settings.Save();
                     }
                     else
                     {

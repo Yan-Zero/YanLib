@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using YanLib.Core;
 using YanLib.DataManipulator;
 using YanLib.EventSystem;
+using YanLib.UI.EventUI;
 using Event = YanLib.EventSystem.Event;
 
 namespace YanLib.Core
@@ -64,6 +65,26 @@ namespace YanLib.Core
                     }
                 }
             }
+
+            if(YanLib.Settings.ChoiceHotkey.Value)
+            {
+                int i = 0;
+                for (int index = 0; index < ___chooseHolder.childCount;++index)
+                {
+                    var choice = ___chooseHolder.GetChild(index);
+                    if (!choice.gameObject.activeSelf)
+                        continue;
+                    if (i > 11)
+                        break;
+                    var choiceNo = choice.Find("MassageChooseNo.");
+                    choiceNo.gameObject.SetActive(true);
+                    choiceNo.GetComponent<Text>().text = $"<color=#FFFFFF>({MessageEventManager.Instance.massageKeyCodeName[i]}).</color>";
+                    var hotkey = choice.GetComponent<HotkeyMonitor>();
+                    hotkey.choiceIndex = i;
+                    hotkey.choiceButton = choice.GetComponent<Button>();
+                    ++i;
+                }
+            }
         }
 
         /// <summary>
@@ -85,6 +106,8 @@ namespace YanLib.Core
                 GameObject.Destroy(ui_MessageWindow.Instance.massageChoose2.GetComponent<PointerEnter>());
                 ui_MessageWindow.Instance.massageChoose1.AddComponent<YanPointerEnter>().TipTitle = "Tip";
                 ui_MessageWindow.Instance.massageChoose2.AddComponent<YanPointerEnter>().TipTitle = "Tip";
+                ui_MessageWindow.Instance.massageChoose1.AddComponent<HotkeyMonitor>();
+                ui_MessageWindow.Instance.massageChoose2.AddComponent<HotkeyMonitor>();
 
                 Event._choice1Object = GameObject.Instantiate(ui_MessageWindow.Instance.massageChoose1);
                 Event._choice2Object = GameObject.Instantiate(ui_MessageWindow.Instance.massageChoose2);
@@ -134,32 +157,6 @@ namespace YanLib.Core
             }
         }
 
-        private static IEnumerable<CodeInstruction> SetActorMassage(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            bool FoundNop = false;
-            int Start = 0;
-            var codes = new List<CodeInstruction>(instructions);
-            for (var i = 0; i < codes.Count; i++)
-            {
-                if (FoundNop)
-                {
-                    if (codes[i].opcode != OpCodes.Br_S)
-                        FoundNop = false;
-                    else
-                        Start = i + 1;
-                }
-                if (codes[i].opcode == OpCodes.Nop)
-                    FoundNop = true;
-            }
-            codes[Start++] = new CodeInstruction(OpCodes.Ldstr, "Discussion.1");
-            codes[Start++] = new CodeInstruction(OpCodes.Ldarg_1);
-            codes[Start++] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(EventHelper), "CallEvent", new Type[] {
-            typeof(string) , typeof(int)}));
-            for (; Start < codes.Count - 1; Start++)
-                codes[Start] = new CodeInstruction(OpCodes.Nop);
-            return codes.AsEnumerable();
-        }
-    
         private static bool GetItem_Prefix(ref int ___massageItemTyp,ref Transform ___itemHolder)
         {
             if (___massageItemTyp != int.MinValue)
@@ -268,6 +265,17 @@ namespace YanLib.Core
             RuntimeConfig.ChoiceEnvironment.Choose();
             RuntimeConfig.ChoiceEnvironment.HasChoose = false;
             return false;
+        }
+
+        private static void RestChooseWindow_Fix(ref RectTransform ___chooseHolder)
+        {
+            if (YanLib.Settings.ChoiceHotkey.Value)
+            {
+                for (int i = 0; i < ___chooseHolder.childCount; i++)
+                {
+                    ___chooseHolder.GetChild(i).gameObject.SetActive(false);
+                }
+            }
         }
 
         private static bool UpdateInputText_Prefix(string changedValue,ref string ___inputText, ref RectTransform ___chooseHolder,ref InputField ___inputTextField)

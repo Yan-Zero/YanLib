@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using TaiwuUIKit.GameObjects;
@@ -118,7 +119,7 @@ namespace YanLib.Core
             }},
             { "Hide", new PatchHandler
             {
-                TargetType = typeof(WindowManage),
+                TargetType = typeof(ui_MessageWindow),
                 TargetMethonName = "Hide",
                 Postfix = AccessTools.Method(PatchesType,"Hide_Postfix")
             }},
@@ -134,13 +135,39 @@ namespace YanLib.Core
                 TargetMethonName = "Update",
                 Prefix = AccessTools.Method(PatchesType,"OnChoose_Update")
             }},
-            //{ "SetActorMassage", new PatchHandler
-            //{
-            //    TargetType = typeof(MessageEventManager),
-            //    TargetMethonName = "SetActorMassage",
-            //    Transpiler = AccessTools.Method(PatchesType,"SetActorMassage")
-            //}},
+            { "RestChooseWindow_Fix", new PatchHandler
+            {
+                TargetType = typeof(ui_MessageWindow),
+                TargetMethonName = "RestChooseWindow",
+                Prefix = AccessTools.Method(PatchesType,"RestChooseWindow_Fix")
+            }},
+            { "RemoveActor", new PatchHandler
+            {
+                TargetType = typeof(DateFile),
+                TargetMethonName = "RemoveActor",
+                Postfix = AccessTools.Method(PatchesType,"RemoveActorFix")
+            }},
+            { "AddSocialUseSetItem", new PatchHandler
+            {
+                TargetType = typeof(DateFile),
+                TargetMethonName = "AddSocial",
+                Transpiler = AccessTools.Method(PatchesType,"AddSocialUseSetItem")
+            }},
         };
+
+        private static IEnumerable<CodeInstruction> AddSocialUseSetItem(IEnumerable<CodeInstruction> instructions)
+        {
+            foreach(var i in instructions)
+            {
+                if(i.opcode == OpCodes.Callvirt && (i.operand as MethodInfo).Name == "Add" && (i.operand as MethodInfo).GetParameters().Length == 2)
+                {
+                    var type = (i.operand as MethodInfo).ReflectedType;
+                    i.operand = AccessTools.Method(type, "set_Item");
+                }
+                yield return i;
+            }
+        }
+
 
         public static void Init()
         {
@@ -234,12 +261,14 @@ namespace YanLib.Core
         {
             RuntimeConfig.GameLoaded = true;
             foreach (var mod in RuntimeConfig.Mods)
+            {
                 if (mod.SettingUI != null && mod.SettingUI is ManagedGameObject)
                 {
                     var ui = mod.SettingUI;
                     mod.SettingUI = ui;
                 }
-
+                mod.DataFile_Awake?.Invoke();
+            }
         }
 
         private static void UIData_ChangeTrun_Postfix()
@@ -247,6 +276,14 @@ namespace YanLib.Core
             RuntimeConfig.ChangeTrun();
             foreach (var mod in RuntimeConfig.Mods)
                 mod.ChangeTrun?.Invoke();
+        }
+
+        private static void RemoveActorFix(List<int> actorId, bool die)
+        {
+            if (die)
+                foreach (var i in actorId)
+                    if (RuntimeConfig.TraverserLifeRecordFix.ContainsKey(i))
+                        RuntimeConfig.TraverserLifeRecordFix.Remove(i);
         }
     }
 }

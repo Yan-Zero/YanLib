@@ -17,6 +17,7 @@ namespace YanLib
     /// </summary>
     internal class Settings
     {
+        public ConfigEntry<bool> ChoiceHotkey;
 
         /// <summary>
         /// 快捷键设置
@@ -49,10 +50,12 @@ namespace YanLib
         /// <param name="config"></param>
         public void Init(ConfigFile config)
         {
-            this.Config = config;
+            Config = config;
+            ChoiceHotkey = Config.Bind("UI", "UseChoiceHotkey", false, "选项的快捷键");
+
 
             Hotkey = new HotkeyConfig();
-            Hotkey.Init(this.Config);
+            Hotkey.Init(Config);
         }
 
         public void Save()

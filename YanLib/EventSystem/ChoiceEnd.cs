@@ -161,8 +161,8 @@ namespace YanLib.EventSystem
                 if (int.TryParse((string)result, out id))
                 {
                     if (id > 0)
-                        UIManager.Instance.AddUI("ui_MessageWindow", new int[] { 0, TargetActorID, id , TargetActorID });
-                    else
+                        EventHelper.CallEvent(id, TargetActorID);
+                    else if(id > -100)
                         ui_MessageWindow.Instance.Hide();
                 }
                 else
@@ -173,7 +173,7 @@ namespace YanLib.EventSystem
                 id = (int)result;
                 if (id > 0)
                     EventHelper.CallEvent(id, TargetActorID);
-                else
+                else if(id > -100)
                     ui_MessageWindow.Instance.Hide();
             }
         }

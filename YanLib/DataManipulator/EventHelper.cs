@@ -177,7 +177,7 @@ namespace YanLib.DataManipulator
         }
 
         /// <summary>
-        /// 原版事件，原版事件转原版事件并不会改动 MainEventData，请自己手动修改
+        /// 原版事件，原版事件转原版事件只会改 MainEventData 中的 ID
         /// </summary>
         /// <param name="ID"></param>
         /// <param name="TargetActorID"></param>
@@ -186,6 +186,7 @@ namespace YanLib.DataManipulator
         {
             if (ui_MessageWindow.Exists && RuntimeConfig.CurEvent == null)
             {
+                MessageEventManager.Instance.MainEventData[2] = ID;
                 EventMisc.SetMassageWindow(MessageEventManager.Instance.MainEventData, chooseId);
                 EventMisc.SetSizeDelta(2);
             }
