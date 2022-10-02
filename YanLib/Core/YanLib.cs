@@ -1,8 +1,5 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+﻿
 using HarmonyLib;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaiwuUIKit.GameObjects;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityUIKit.Core;
 using UnityUIKit.GameObjects;
 using YanLib.Core;
@@ -21,16 +19,15 @@ namespace YanLib
     /// <summary>
     /// Mod 入口
     /// </summary>
-    [BepInPlugin(GUID, "Yan.Lib", Version)]
-    [BepInProcess("The Scroll Of Taiwu Alpha V1.0.exe")]
-    public class YanLib : BaseUnityPlugin
+    [TaiwuModdingLib.Core.Plugin.PluginConfig("Yan.Core","Yan", Version)]
+    public class YanLib : TaiwuModdingLib.Core.Plugin.TaiwuRemakePlugin
     {
         /// <summary>版本</summary>
-        public const string Version = "1.5.1.1";
+        public const string Version = "1.0";
         /// <summary>GUID</summary>
         public const string GUID = "0.0Yan.Lib";
         /// <summary>日志</summary>
-        public static new ManualLogSource Logger;
+        //public static new ManualLogSource Logger;
         /// <summary>Yan Lib 的设置</summary>
         internal static Settings Settings = new Settings();
         /// <summary>
@@ -38,111 +35,92 @@ namespace YanLib
         /// </summary>
         public static bool DebugMode = false;
 
-        private void Awake()
-        {
-            TypeConverterSupporter.Init();
-            DontDestroyOnLoad(this);
-            Logger = base.Logger;
-            Settings.Init(Config);
-            RuntimeConfig.Init();
-            HarmonyPatches.Init();
-
-            var Lib = new ModHelper.ModHelper(GUID, "YanLib");
-            Lib.SettingUI = new Container()
-            {
-                Group =
-                {
-                    Direction = Direction.Horizontal,
-                    Spacing = 3
-                },
-                Element = { PreferredSize = { 0, 50 } },
-                Children =
-                {
-                    new TaiwuLabel()
-                    {
-                        Text = "事件的选项快捷键"
-                    },
-                    new TaiwuToggle()
-                    {
-                        Text = Settings.ChoiceHotkey.Value ? "开" : "关",
-                        isOn = Settings.ChoiceHotkey.Value,
-                        onValueChanged = (bool value,Toggle tg) =>
-                        {
-                            tg.Text = value ? "开" : "关";
-                            Settings.ChoiceHotkey.Value = value;
-                        },
-                        Element = { PreferredSize = {50}},
-                        TipTitle = "事件的选项快捷键",
-                        TipContant = "开启后，选项前九个将会允许用快捷键选择",
-                    }
-                }
-            };
-        }
-
         /// <summary>
         /// 开/关 UI
         /// </summary>
         public static bool ToggleUI = false;
 
-        private void Update()
+        /// <summary>
+        /// Mod 初始化
+        /// </summary>
+        public override void Initialize()
         {
-            // ESC 键
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (RuntimeConfig.UI_Config.overlay != null && RuntimeConfig.UI_Config.overlay.Created && RuntimeConfig.UI_Config.overlay.IsActive)
-                    ToggleUI = true;
-            }
+            //DontDestroyOnLoad(this);
+            //Logger = base.Logger;
+            //Settings.Init(Config);
+            RuntimeConfig.Init();
+            HarmonyPatches.Init();
 
-            // UI Hotkey
-            if (Settings.Hotkey.OpenUI.Value.IsDown() || ToggleUI)
-            {
-                ToggleUI = false;
+            ToggleUI = true;
 
-                if (RuntimeConfig.UI_Config.overlay != null && RuntimeConfig.UI_Config.overlay.Created)
+            var Lib = new ModHelper.ModHelper(GUID, "YanLib")
+            {
+                SettingUI = new Container()
                 {
-                    RuntimeConfig.UI_Config.overlay.RectTransform.SetAsLastSibling();
-                    if (RuntimeConfig.UI_Config.overlay.IsActive)
+                    Group =
                     {
-                        RuntimeConfig.UI_Config.overlay.SetActive(false);
-                        Settings.Save();
-                    }
-                    else
+                        Direction = Direction.Horizontal,
+                        Spacing = 3
+                    },
+                    Element = { PreferredSize = { 0, 50 } },
+                },
+                OnUpdate = () =>
+                {
+                    // ESC 键
+                    if (Input.GetKeyDown(KeyCode.Escape))
+                        if (RuntimeConfig.UI_Config.overlay != null && RuntimeConfig.UI_Config.overlay.Created && RuntimeConfig.UI_Config.overlay.IsActive)
+                            ToggleUI = true;
+
+                    if (ToggleUI || Settings.Hotkey.OpenUI.IsDown())
                     {
-                        RuntimeConfig.UI_Config.overlay.SetActive(true);
-                        AudioManager.instance.PlaySE("SE_BUTTONDEFAULT");
+                        ToggleUI = false;
+
+                        if (RuntimeConfig.UI_Config.overlay != null && RuntimeConfig.UI_Config.overlay.Created)
+                        {
+                            RuntimeConfig.UI_Config.overlay.RectTransform.SetAsLastSibling();
+                            if (RuntimeConfig.UI_Config.overlay.IsActive)
+                            {
+                                RuntimeConfig.UI_Config.windows.CloseButton.OnClick(RuntimeConfig.UI_Config.windows.CloseButton);
+                                Settings.Save();
+                            }
+                            else
+                                RuntimeConfig.UI_Config.overlay.SetActive(true);
+                        }
+                        else
+                        {
+                            SettingUI.PrepareGUI();
+                            var parent = GameObject.Find("Camera_UIRoot/Canvas/LayerPopUp").transform;
+                            RuntimeConfig.UI_Config.overlay.SetParent(parent);
+                            RuntimeConfig.UI_Config.overlay.GameObject.layer = 5;
+                            RuntimeConfig.UI_Config.overlay.RectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                            RuntimeConfig.UI_Config.overlay.RectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                            RuntimeConfig.UI_Config.overlay.RectTransform.anchoredPosition = Vector2.zero;
+                        }
                     }
                 }
-                else
-                {
-                    SettingUI.PrepareGUI();
-                    var parent = GameObject.Find("/UIRoot/Canvas/UIPopup").transform;
-                    RuntimeConfig.UI_Config.overlay.SetParent(parent);
-                    RuntimeConfig.UI_Config.overlay.GameObject.layer = 5;
-                    RuntimeConfig.UI_Config.overlay.RectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                    RuntimeConfig.UI_Config.overlay.RectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                    RuntimeConfig.UI_Config.overlay.RectTransform.anchoredPosition = Vector2.zero;
-                }
-            }
+            };
+
+            GameObject.Find("Game").AddComponent<Listener>();
+
+        }
+
+        /// <summary>
+        /// 禁用 Mod 的时候调用
+        /// </summary>
+        public override void Dispose()
+        {
         }
     }
 
-    /// <summary>
-    /// 转换器支持
-    /// </summary>
-    internal static class TypeConverterSupporter
+    internal class Listener : MonoBehaviour
     {
-        public static void Init()
+        private void Update()
         {
-            TypeConverter converter = new TypeConverter
-            {
-                ConvertToString = ((object obj, Type type) => JsonConvert.SerializeObject(obj)),
-                ConvertToObject = ((string str, Type type) => JsonConvert.DeserializeObject(str, type))
-
-            };
-            TomlTypeConverter.AddConverter(typeof(int[]), converter);
-            TomlTypeConverter.AddConverter(typeof(bool[]), converter);
-            TomlTypeConverter.AddConverter(typeof(List<int>), converter);
-            TomlTypeConverter.AddConverter(typeof(Dictionary<string, Dictionary<int, int>>), converter);
+            foreach(var k in RuntimeConfig.KSListener)
+                if (k.Key.IsDown())
+                    k.Value?.Invoke();
+            foreach (var i in RuntimeConfig.Mods)
+                i.OnUpdate?.Invoke();
         }
     }
 

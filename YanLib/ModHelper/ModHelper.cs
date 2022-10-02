@@ -30,28 +30,6 @@ namespace YanLib.ModHelper
         public string Name { private set; get; }
 
         /// <summary>
-        /// 游戏存档时调用
-        /// </summary>
-        public Action SaveData;
-        /// <summary>
-        /// 新建游戏时调用
-        /// </summary>
-        public Action NewData;
-        /// <summary>
-        /// 加载存档时调用
-        /// </summary>
-        public Action LoadData;
-        /// <summary>
-        /// 过月时候调用，不建议用这个（
-        /// 否则过月速度会被拖慢（
-        /// </summary>
-        public Action ChangeTrun;
-        /// <summary>
-        /// DataFile Awake 运行的时候调用，对于 UI 添加 MonoBehaviour 的要放在这
-        /// </summary>
-        public Action DataFile_Awake;
-
-        /// <summary>
         /// Mod 的设置
         /// </summary>
         public ManagedGameObject SettingUI
@@ -65,8 +43,8 @@ namespace YanLib.ModHelper
                 if (RuntimeConfig.UI_Config.SettingUIScroll.ContentChildren.ContainsKey(GUID))
                     RuntimeConfig.UI_Config.SettingUIScroll.ContentChildren.Remove(GUID);
                 ui = value;
-                if (!RuntimeConfig.GameLoaded)
-                    return;
+                //if (!RuntimeConfig.GameLoaded)
+                //    return;
                 RuntimeConfig.UI_Config.SettingUIScroll.Add(GUID, new BoxAutoSizeModelGameObject()
                 {
                     Name = GUID,
@@ -86,8 +64,6 @@ namespace YanLib.ModHelper
                         {
                             Name = "Button-Show",
                             Text = Name,
-                            UseBoldFont = true,
-                            UseOutline = true,
                             OnClick = (Button button) =>
                             {
                                 for(int i = 1;i<button.Parent.Children.Count;i++)
@@ -97,7 +73,7 @@ namespace YanLib.ModHelper
                             {
                                 PreferredSize = { 0 , 50 }
                             },
-                            FontColor = Color.white
+                            //FontColor = Color.white
                         },
                         new BoxAutoSizeModelGameObject()
                         {
@@ -122,6 +98,11 @@ namespace YanLib.ModHelper
         }
 
         /// <summary>
+        /// 在 Unity Update 中调用
+        /// </summary>
+        public Action OnUpdate = null;
+
+        /// <summary>
         /// 新建 ModHelper 实例
         /// </summary>
         /// <param name="_GUID">Mod 的 GUID</param>
@@ -130,24 +111,24 @@ namespace YanLib.ModHelper
         {
             GUID = _GUID;
             Name = ModName;
-            if (!RuntimeConfig.ActorDataModKeys.ContainsKey(GUID))
-                RuntimeConfig.ActorDataModKeys.Add(GUID, new Dictionary<int, int>() { });
+            //if (!RuntimeConfig.ActorDataModKeys.ContainsKey(GUID))
+            //    RuntimeConfig.ActorDataModKeys.Add(GUID, new Dictionary<int, int>() { });
             RuntimeConfig.Mods.Add(this);
         }
 
         /// <summary>
-        /// 返回一个专属 ActorData 的 Key 用以储存信息
+        /// 添加监听的快捷键，全局有效
         /// </summary>
-        /// <param name="Key">Mod 内部使用的 Key 值，例如 1 2 3</param>
-        /// <returns></returns>
-        public int GetActorDataKey(int Key)
+        /// <param name="shortcut">快捷键</param>
+        /// <param name="action">回调函数</param>
+        /// <returns>false 是添加失败，true 则为添加成功</returns>
+        public static bool AddKeyboardShortcutListener(KeyboardShortcut shortcut, Action action)
         {
-            if (RuntimeConfig.ActorDataModKeys[GUID].TryGetValue(Key, out int key))
-                return key;
-            else
-                return RuntimeConfig.AllocateActorDataKey(GUID, Key);
+            // TODO：区分场景
+            if (RuntimeConfig.KSListener.ContainsKey(shortcut))
+                return false;
+            RuntimeConfig.KSListener.Add(shortcut, action);
+            return true;
         }
-
-        
     }
 }
