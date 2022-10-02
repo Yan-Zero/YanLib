@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,17 +21,40 @@ namespace YanLib.ModHelper
     {
         private ManagedGameObject ui = null;
 
+        private ConfigFile m_config_file = null;
+
         /// <summary>
-        /// Mod 的 GUID
+        ///     Mod 的 GUID
         /// </summary>
         public string GUID { private set; get; }
         /// <summary>
-        /// Mod 的名字
+        ///     Mod 的名字
         /// </summary>
         public string Name { private set; get; }
-
         /// <summary>
-        /// Mod 的设置
+        ///     Mod 的版本
+        /// </summary>
+        public string Version { private set; get; }
+        /// <summary>
+        ///     配置文件
+        /// </summary>
+        public ConfigFile Config 
+        { 
+            get
+            {
+                if (m_config_file == null)
+                    m_config_file = new ConfigFile(Path.Combine(Game.GetArchiveDirPath(), "ModSettings", GUID + ".ini"), false);
+                return m_config_file;
+            }
+            set
+            {
+                if (m_config_file != null)
+                    m_config_file.Save();
+                m_config_file = value;
+            }
+        }
+        /// <summary>
+        ///     Mod 的设置 UI
         /// </summary>
         public ManagedGameObject SettingUI
         {
@@ -98,7 +122,7 @@ namespace YanLib.ModHelper
         }
 
         /// <summary>
-        /// 在 Unity Update 中调用
+        ///     在 Unity Update 中调用
         /// </summary>
         public Action OnUpdate = null;
 

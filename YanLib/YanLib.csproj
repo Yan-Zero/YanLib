@@ -42,12 +42,16 @@
       <HintPath>H:\SteamLibrary\steamapps\common\The Scroll Of Taiwu\The Scroll of Taiwu_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\lib\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaiwuModdingLib">
       <HintPath>H:\SteamLibrary\steamapps\common\The Scroll Of Taiwu\The Scroll of Taiwu_Data\Managed\TaiwuModdingLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TaiwuUIKit">
-      <HintPath>H:\SteamLibrary\steamapps\common\The Scroll Of Taiwu\Mod\Test\Plugins\TaiwuUIKit.dll</HintPath>
+      <HintPath>..\lib\TaiwuUIKit.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
@@ -83,11 +87,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityUIKit">
-      <HintPath>H:\SteamLibrary\steamapps\common\The Scroll Of Taiwu\Mod\Test\Plugins\UnityUIKit.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="YamlDotNet">
-      <HintPath>..\lib\YamlDotNet.dll</HintPath>
+      <HintPath>..\lib\UnityUIKit.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -97,11 +97,18 @@
     <Compile Include="Core\RuntimeConfig.cs" />
     <Compile Include="Core\Setting.cs" />
     <Compile Include="Core\YanLib.cs" />
+    <Compile Include="ModHelper\ConfigDefinition.cs" />
+    <Compile Include="ModHelper\ConfigDescription.cs" />
+    <Compile Include="ModHelper\ConfigEntry.cs" />
+    <Compile Include="ModHelper\ConfigFile.cs" />
     <Compile Include="ModHelper\KeyboardShortcut.cs" />
     <Compile Include="ModHelper\ModHelper.cs" />
+    <Compile Include="ModHelper\SettingChangedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\SettingUI.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

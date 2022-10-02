@@ -1,0 +1,458 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TaiwuUIKit</name>
+    </assembly>
+    <members>
+        <member name="T:TaiwuUIKit.GameObjects.CloseButton">
+            <summary>
+            异形按钮，关闭。Clone 自系统设置。
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.CloseButton.Create(System.Boolean)">
+            <summary>
+            创建关闭按钮
+            </summary>
+            <param name="active"></param>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.TaiwuLabel">
+            <summary>
+            太吾风格的 Label
+            </summary>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.TaiwuLabel.Style">
+            <summary>
+            风格
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuLabel.Style.None">
+            <summary>
+            没有黑底+字体黄色
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuLabel.Style.WithBlackBackground">
+            <summary>
+            黑底+字体黄色，25号
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuLabel.Style.Subtile">
+            <summary>
+            子标题，黑底+字体灰色
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuLabel.LableStyle">
+            <summary>
+            显示类型
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuLabel.BaseLabel">
+            <summary>
+            文本的本体
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuLabel.Alignment">
+            <summary>
+            文本的对齐方式
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuLabel.UseOutline">
+            <summary>
+            是否描边
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuLabel.Text">
+            <summary>
+            显示文本
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuLabel.Create(System.Boolean)">
+            <summary>
+            创建文本
+            </summary>
+            <param name="active"></param>
+            <exception cref="T:System.ArgumentException">不支持的 LableStyle</exception>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.TaiwuSlider">
+            <summary>
+            滑条
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuSlider.TipTitle">
+            <summary>
+            Tip 的标题
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuSlider.TipContent">
+            <summary>
+            Tip 的 内容
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuSlider.LeftClick_AudioKey">
+            <summary>
+            左击的音乐
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuSlider.Create(System.Boolean)">
+            <summary>
+            创建对象
+            </summary>
+            <param name="active"></param>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.TaiwuTitle">
+            <summary>
+            标题栏 
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuTitle.Direction">
+            <summary>
+            文本方向
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuTitle.Text">
+            <summary>
+            标题文本
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuTitle.Create(System.Boolean)">
+            <summary>
+            创建标题对象
+            </summary>
+            <param name="active">激活与否</param>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.TaiwuToggle">
+            <summary>
+            太吾标准风格的 Toggle
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuToggle.TipTitle">
+            <summary>
+            Tip 的标题
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuToggle.TipContent">
+            <summary>
+            Tip 的 内容
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuToggle.m_Label">
+            <summary>
+            文本标签（实际上是 TaiwuLabel 类型的）
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuToggle.Label">
+            <summary>
+            实际上是 TaiwuLabel，可以直接 as TaiwuLabel。
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuToggle.Text">
+            <summary>
+            文本内容
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuToggle.UseOutline">
+            <summary>
+            使用 OutLine
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuToggle.LeftClick_AudioKey">
+            <summary>
+            鼠标点击的声音
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuToggle.OnValueChanged_Invoke(System.Boolean)">
+            <summary>
+            动画变更
+            </summary>
+            <param name="isOn"></param>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuToggle.Hover">
+            <summary>
+            Hover 的组件
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuToggle.Normal">
+            <summary>
+            Normal 的组件
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuToggle.Create(System.Boolean)">
+            <summary>
+            创建组件
+            </summary>
+            <param name="active"></param>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.BaseFrame">
+            <summary>
+            基本框架
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.BaseFrame.Direction">
+            <summary>
+            元素的排列方向
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.BaseFrame.Spacing">
+            <summary>
+            间隔
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.BaseFrame.Padding">
+            <summary>
+            上下左右 or
+            上下 左右 or
+            上 左右 下 or
+            上 右 下 左 
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.BaseFrame.Create(System.Boolean)">
+            <summary>
+            创建 BaseFrame 对象
+            </summary>
+            <param name="active"></param>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.BaseScroll">
+            <summary>
+            滚动框，显然无滚动条
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.BaseScroll.Create(System.Boolean)">
+            <summary>
+            创建 BaseScroll 对象
+            </summary>
+            <param name="active"></param>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.BaseText">
+            <summary>
+            文本显示
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.BaseText.Alignment">
+            <summary>
+            文本对齐方式
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.BaseText.UseOutline">
+            <summary>
+            是否描边
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.BaseText.OutlineColor">
+            <summary>
+            描边的颜色
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.BaseText.Create(System.Boolean)">
+            <summary>
+            创建文本
+            </summary>
+            <param name="active">默认激活与否</param>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.BaseText.Apply">
+            <summary>
+            应用配置
+            </summary>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.TaiwuButton">
+            <summary>
+            太吾的按钮
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuButton.Normal">
+            <summary>
+            正常情况
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuButton.Hover">
+            <summary>
+            鼠标浮于其上
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuButton.LeftClick_AudioKey">
+            <summary>
+            鼠标点击的声音
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuButton.m_Label">
+            <summary>
+            文本标签（实际上是 TaiwuLabel 类型的）
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuButton.Label">
+            <summary>
+            实际上是 BaseText，可以直接 as BaseText。
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuButton.Text">
+            <summary>
+            文本内容
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuButton.OnClick_Invoke">
+            <summary>
+            多个放放音乐
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuButton.Create(System.Boolean)">
+            <summary>
+            创建 Button 对象
+            </summary>
+            <param name="active"></param>
+        </member>
+        <member name="T:TaiwuUIKit.GameObjects.TaiwuWindows">
+            <summary>
+            太吾窗口
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuWindows.TaiwuTitle">
+            <summary>
+            标题实例
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.GameObjects.TaiwuWindows.CloseButton">
+            <summary>
+            关闭按钮
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.GameObjects.TaiwuWindows.Title">
+            <summary>
+            标题文本
+            </summary>
+        </member>
+        <member name="M:TaiwuUIKit.GameObjects.TaiwuWindows.Create(System.Boolean)">
+            <summary>
+            Window，仿制 Mod 管理 UI
+            </summary>
+            <param name="active"></param>
+        </member>
+        <member name="T:TaiwuUIKit.Resources.Others">
+            <summary>
+            所有的 Sprite 资源
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.Others.Font_GB2312">
+            <summary>
+            窗口的背景 Sprite
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.Others.SliderColorBlocks">
+            <summary>
+            滑条的颜色变化
+            </summary>
+        </member>
+        <member name="T:TaiwuUIKit.Resources.Others.ITaiwuSound">
+            <summary>
+            太吾音乐
+            </summary>
+        </member>
+        <member name="P:TaiwuUIKit.Resources.Others.ITaiwuSound.LeftClick_AudioKey">
+            <summary>
+            Audio Key
+            </summary>
+        </member>
+        <member name="T:TaiwuUIKit.Resources.SpriteResource">
+            <summary>
+            所有的 Sprite 资源
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.WindowsBG">
+            <summary>
+            窗口的背景 Sprite
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SP_Kuang_6">
+            <summary>
+            太吾内部的起名，用在了 Base Sroll
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SP_Kuang_7">
+            <summary>
+            太吾内部的命名，用在了 Base Frame
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SP_Title_Big_2">
+            <summary>
+            sp_biaoti_dabiaoti_2，TaiwuTitle
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SP_Button_2_0">
+            <summary>
+            按钮，Normal
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SP_Button_2_1">
+            <summary>
+            按钮，高亮状态。
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.Black_BGound">
+            <summary>
+            mainmenu_heidi，黑底。
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.No_Disable">
+            <summary>
+            灰色的 No，sp_popup_window_18
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.No_Normal">
+            <summary>
+            黄色的 No，sp_popup_window_9
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.Rhombus_Hover">
+            <summary>
+            高亮的◇按钮，sp_popup_window_6_1
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.Rhombus_Normal">
+            <summary>
+            普通的◇按钮，sp_popup_window_6_0
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.Toggle_Normal">
+            <summary>
+            Toggle不亮 sp_newgame_anniu_2_0
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.Toggle_Hover">
+            <summary>
+            Toggle高亮，sp_newgame_anniu_2_1
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.TPatch_Hover">
+            <summary>
+            Toggle 的右上角，亮，sp_newgame_anniu_3_0
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.TPatch_Normal">
+            <summary>
+            Toggle 的右上角，不亮，sp_newgame_anniu_3_1
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SliderDot">
+            <summary>
+            上边的小黑点，sp_huadongtiao_0_1
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SliderBG">
+            <summary>
+            滑动条背景，sp_huadongtiao_0_0
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SliderHandle_Normal">
+            <summary>
+            滑动条的滑块，sp_huadongtiao_1_0
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SliderHandle_Hover">
+            <summary>
+            高亮
+            </summary>
+        </member>
+        <member name="F:TaiwuUIKit.Resources.SpriteResource.SliderHandle_Disabled">
+            <summary>
+            禁用
+            </summary>
+        </member>
+    </members>
+</doc>

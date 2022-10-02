@@ -27,7 +27,7 @@ namespace YanLib
         /// <summary>GUID</summary>
         public const string GUID = "0.0Yan.Lib";
         /// <summary>日志</summary>
-        //public static new ManualLogSource Logger;
+        public static ILogger Logger = Debug.unityLogger;
         /// <summary>Yan Lib 的设置</summary>
         internal static Settings Settings = new Settings();
         /// <summary>
@@ -45,6 +45,8 @@ namespace YanLib
         /// </summary>
         public override void Initialize()
         {
+            if (RuntimeConfig.Mods.Count > 0)
+                return;
             //DontDestroyOnLoad(this);
             //Logger = base.Logger;
             //Settings.Init(Config);

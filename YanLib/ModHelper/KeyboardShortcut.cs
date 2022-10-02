@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+// From https://github.com/BepInEx/BepInEx/
+
 namespace YanLib.ModHelper
 {
     /// <summary>
